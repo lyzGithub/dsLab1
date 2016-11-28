@@ -1,7 +1,10 @@
 package client;
-
+/*
+ * create by liyize 2016.11.28
+ */
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.Scanner;
 
 import common.RmiSample;
 
@@ -10,9 +13,16 @@ public class timeClient {
     /**  
      * @param args  
      */  
+	private static String secCode = null;
 	private static double delayTime = 0;
 	private static double cerrentTimeFromServer = 0;
+	final private static String ipAddress = "114.212.86.211";
+	private static String url = null;
     public static void main(String[] args) {   
+    	
+    	secCode = args[0];
+    	//secCode = "liyize";
+    	url = "//"+ipAddress+":8808/lyzDemo-SERVER"; 
     	ClockThreadGetTime getClockThread = new ClockThreadGetTime();  
     	getClockThread.start();  
     	ClockThreadGetDelay getDelay = new ClockThreadGetDelay();
@@ -30,9 +40,13 @@ public class timeClient {
     		super.run();  
     		while (true) {  
     			try {   
-    	            String url = "//114.212.86.211:8808/lyzDemo-SERVER";   
+    	             
     	            RmiSample RmiObject = (RmiSample) Naming.lookup(url);  
-    	            cerrentTimeFromServer = RmiObject.getTime();
+    	            cerrentTimeFromServer = RmiObject.getTime(secCode);
+    	            if(cerrentTimeFromServer == -1){
+    	            	System.out.println("secCode is wrong!");
+    	            	System.exit(-1);
+    	            }
     	            System.out.println("I am client, time from server:"+(cerrentTimeFromServer+delayTime));   
     	        } catch (RemoteException rex) {   
     	            System.out.println("Error in lookup: " + rex.toString());   
@@ -61,12 +75,18 @@ public class timeClient {
     		super.run();  
     		while (true) {  
     			try {   
-    	            String url = "//114.212.86.211:8808/lyzDemo-SERVER";   
+    	              
     	            RmiSample RmiObject = (RmiSample) Naming.lookup(url);   
     	            double Time1 = System.currentTimeMillis();
-    	            double returnTime = RmiObject.comDelay(Time1);
+    	            double returnTime = RmiObject.getTime(secCode);
+    	            if(returnTime == -1){
+    	            	System.out.println("secCode is wrong!");
+    	            	System.exit(-1);
+    	            }
     	            double Time4 = System.currentTimeMillis();
-    	            delayTime = (Time4-Time1)/2;
+    	            double a = (Time1-returnTime);
+    	            double b = (returnTime - Time4);
+    	            delayTime = (a>b)?a:b;
     	            System.out.println("Update delay time, delay time:"+delayTime);
     	            
     	        } catch (RemoteException rex) {   

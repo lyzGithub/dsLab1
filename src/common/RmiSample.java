@@ -1,10 +1,14 @@
 package common;   
-  
+/*
+ * create by liyize 2016.11.28
+ */
 import java.rmi.Remote;   
 import java.rmi.RemoteException;   
   
+/*
+ * define the process interface
+ */
 public interface RmiSample extends Remote {   
-    public int sum(int a, int b) throws RemoteException;   
-    public double getTime() throws RemoteException;
-    public double comDelay(double clientTime) throws RemoteException;
+   
+    public double getTime(String secCode) throws RemoteException;
 }  
